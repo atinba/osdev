@@ -19,8 +19,8 @@ WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wconversion -Wstrict-prototypes
 EXTRA_FLAGS:=-fstack-protector-all
 INC_FLAGS:=-Iinclude
-LIB_FLAGS:=-L/home/atin/osdev/ -nostdlib -lk -lgcc
-CFLAGS:=$(DEFAULT_FLAGS) $(WARN_FLAGS) $(INC_FLAGS) #-D__is_libc
+LIB_FLAGS:=-Llib -nostdlib -lk -lgcc
+CFLAGS:=$(DEFAULT_FLAGS)  $(INC_FLAGS)
 
 KERN_MACRO:=-D__is_kernel
 LIBC_MACRO:=-D__is_libc
@@ -33,12 +33,15 @@ ARCH_OBJS := $(addprefix $(ARCHDIR)/,$(KERNEL_ARCH_OBJS))
 KOBJS=$(ARCH_OBJS) kernel/kernel/kernel.o
 
 .PHONY: all clean lib
+.SUFFIXES: 
+
 # Rules
 all: $(OS)
 
 $(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
 	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(KOBJS) $(LIB_FLAGS)
 	grub-file --is-x86-multiboot $@
+	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
 
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	OBJ=`$(CC_CF) -print-file-name=$(@F)` && cp "$$OBJ" $@
@@ -46,18 +49,18 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 %.o: %.c
 	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
 
-%.o: %.S
+%.o: %.s
 	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
 
 # LIB
-FREEOBJS := $(patsubst %.c, %.o, $(wildcard lib/**/*.c))
-LIBC_OBJS=$(FREEOBJS)
-LIBK_OBJS=$(FREEOBJS:.o=.libk.o)
-LIB_BIN:=libk.a # libc.a
+LIB_SRC := $(wildcard lib/**/*.c)
+LIBC_OBJS=$(LIB_SRC:.c=.libc.o)
+LIBK_OBJS=$(LIB_SRC:.c=.libk.o)
+LIB_BIN:=lib/libk.a # libc.a
 
 lib: $(LIB_BIN)
 
-libk.a: $(LIBK_OBJS)
+lib/libk.a: $(LIBK_OBJS)
 	$(AR) rcs $@ $(LIBK_OBJS)
 
 %.libk.o: %.c
@@ -69,10 +72,10 @@ libk.a: $(LIBK_OBJS)
 libc.a: $(LIBC_OBJS)
 	$(AR) rcs $@ $(LIBC_OBJS)
 
-%.o: %.c
+%.libc.o: %.c
 	$(CC_CF) -MD -c $< -o $@ $(LIBC_MACRO)
 
-%.S: %.c
+%.libc.S: %.c
 	$(CC_CF) -MD -c $< -o $@ $(LIBC_MACRO)
 
 clean:
@@ -84,6 +87,9 @@ clean:
 
 qemu: $(OS)
 	qemu-system-i386 -kernel $(OS)
+
+todolist:
+	rg -n -i TODO .
 
 re:
 	make clean

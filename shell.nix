@@ -15,6 +15,7 @@ mkShell {
     grub2
     xorriso
     qemu
+    ripgrep
   ];
 }
 

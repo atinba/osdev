@@ -1,119 +1,92 @@
-# Config
 OS:=myos.bin
-DEFAULT_HOST:=i686-elf
-HOST?=DEFAULT_HOST
+
+# Arch Info
+HOST:=i686-elf
 HOSTARCH:=i386
+ARCHDIR:=arch/$(HOSTARCH)
+include $(ARCHDIR)/build.mk
 
-# Dirs
-SYSROOT:=sysroot
-BOOTDIR:=$(SYSROOT)/boot
-SYS_USRDIR:=$(SYSROOT)/usr
-SYS_INCDIR:=$(USRDIR)/include
-LIBDIR:=$(USRDIR)/lib
-INC:=include
-
-# Build Opts
-HOST:=i686-elf# TODO
+# Build Info
 AR:=$(HOST)-ar
 AS:=$(HOST)-as
 CC:=$(HOST)-gcc
 
-RELEASE_CFLAGS:=-O2
-CFLAGS:=-g -ffreestanding
-CFLAGS += -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
+RELEASE_FLAGS:=-O2 # Todo: release
+DEFAULT_FLAGS:=-g -ffreestanding -O2
+WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
             -Wredundant-decls -Wnested-externs -Winline -Wno-long-long \
             -Wconversion -Wstrict-prototypes
 EXTRA_FLAGS:=-fstack-protector-all
-LFLAGS:= -nostdlib -lk -lgcc
-CFLAGS+=$(CPPFLAGS) -D__is_libc -Iinclude
-LIBK_CFLAGS:=$(CFLAGS)
-LIBK_CPPFLAGS:=$(CPPFLAGS) -D__is_libk
-# Deps
+INC_FLAGS:=-Iinclude
+LIB_FLAGS:=-L/home/atin/osdev/ -nostdlib -lk -lgcc
+CFLAGS:=$(DEFAULT_FLAGS) $(WARN_FLAGS) $(INC_FLAGS) #-D__is_libc
 
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -I../include
-LIB_BIN:=libk.a # libc.a
-# TODO: phony, suffixes
+KERN_MACRO:=-D__is_kernel
+LIBC_MACRO:=-D__is_libc
+LIBK_MACRO:=-D__is_libk
 
+CC_CF:=$(CC) $(CFLAGS) -std=gnu11
 
-ARCHDIR=arch/i386# TODO: dont hardcode
-include $(ARCHDIR)/build.mk
-LIBS:=$(LIBS)-L/home/atin/osdev/ -nostdlib -lk -lgcc
-KOBJS := $(addprefix $(ARCHDIR)/,$(KERNEL_ARCH_OBJS))
-OBJS=\
-$(KOBJS) \
-kernel/kernel/kernel.o \
+# Objs
+ARCH_OBJS := $(addprefix $(ARCHDIR)/,$(KERNEL_ARCH_OBJS))
+KOBJS=$(ARCH_OBJS) kernel/kernel/kernel.o
 
-# TODO: figure out order
-LL=\
-$(LDFLAGS) \
-$(OBJS) \
-$(LIBS) \
-
-LINK_LIST=\
-$(LDFLAGS) \
-$(ARCHDIR)/crti.o \
-$(ARCHDIR)/crtbegin.o \
-$(ARCHDIR)/tty.o \
-$(ARCHDIR)/boot.o \
-$(LIBS) \
-kernel/kernel/kernel.o \
-$(ARCHDIR)/crtend.o \
-$(ARCHDIR)/crtn.o \
-
-.PHONY: all clean install install-headers install-kernel
+.PHONY: all clean lib
 # Rules
-all: kernel
+all: $(OS)
 
-kernel: $(OS)
-$(OS): $(LIB_BIN) $(OBJS) $(ARCHDIR)/linker.ld
-	$(CC) -T $(ARCHDIR)/linker.ld -o $@ $(CFLAGS) $(LINK_LIST)
-	grub-file --is-x86-multiboot $(OS)
+$(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
+	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(KOBJS) $(LIB_FLAGS)
+	grub-file --is-x86-multiboot $@
 
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
-	OBJ=`$(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
+	OBJ=`$(CC_CF) -print-file-name=$(@F)` && cp "$$OBJ" $@
 
 %.o: %.c
-	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
+	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
 
 %.o: %.S
-	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
 
-# LIBS
-
-FREEOBJS := $(patsubst %.c, %.o, $(wildcard libc/**/*.c))
-
-LIBC_OBJS=\
-$(FREEOBJS) \
-
+# LIB
+FREEOBJS := $(patsubst %.c, %.o, $(wildcard lib/**/*.c))
+LIBC_OBJS=$(FREEOBJS)
 LIBK_OBJS=$(FREEOBJS:.o=.libk.o)
+LIB_BIN:=libk.a # libc.a
 
-libc.a: $(LIBC_OBJS)
-	$(AR) rcs $@ $(LIBC_OBJS)
+lib: $(LIB_BIN)
 
 libk.a: $(LIBK_OBJS)
 	$(AR) rcs $@ $(LIBK_OBJS)
 
-%.o: %.c
-	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)
-
-%.S: %.c
-	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
-
 %.libk.o: %.c
-	$(CC) -MD -c $< -o $@ -std=gnu11 $(LIBK_CFLAGS) $(LIBK_CPPFLAGS)
+	$(CC_CF) -MD -c $< -o $@ $(LIBK_MACRO)
 
 %.libk.o: %.S
-	$(CC) -MD -c $< -o $@ $(LIBK_CFLAGS) $(LIBK_CPPFLAGS)
+	$(CC_CF) -MD -c $< -o $@ $(LIBK_MACRO)
+
+libc.a: $(LIBC_OBJS)
+	$(AR) rcs $@ $(LIBC_OBJS)
+
+%.o: %.c
+	$(CC_CF) -MD -c $< -o $@ $(LIBC_MACRO)
+
+%.S: %.c
+	$(CC_CF) -MD -c $< -o $@ $(LIBC_MACRO)
 
 clean:
-	$(RM) -r $(BUILD_DIR)
-	$(RM) -r $(BUILD_DIR)
+	$(RM) $(OS) $(LIB_BIN)
+	$(RM) $(KOBJS) $(KOBJS:.o=.d)
+	$(RM) $(LIBK_OBJS) $(LIBK_OBJS:.o=.d)
+	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
+	git clean -iX
 
+qemu: $(OS)
+	qemu-system-i386 -kernel $(OS)
 
-testkern:
-	./clean.sh
-	cd libc && make install
+re:
+	make clean
 	make
 
 -include $(OBJS:.o=.d)

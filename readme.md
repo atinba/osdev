@@ -2,12 +2,16 @@
 - Build System
     - Add valgrind check, cloc, lint, test, format, coverage
     - Pipelines to auto build
+    - Configure formatter, static analysis, coverage and other awesome things
+- Getting a shell
+    - ???
+
 
 ## Timeline
 
-- 26/11
+- Jan 2024
+    - get interrupts working
     - figure out what's next
-    - minor tweaks in makefile, project structure
 
 <details>
 <summary>Past</summary>

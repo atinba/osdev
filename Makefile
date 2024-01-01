@@ -11,7 +11,7 @@ AR:=$(HOST)-ar
 AS:=$(HOST)-as
 CC:=$(HOST)-gcc
 
-RELEASE_FLAGS:=-O2 # Todo: release
+RELEASE_FLAGS:=-O2 # TODO: release
 DEFAULT_FLAGS:=-g -ffreestanding -O2
 WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
@@ -25,18 +25,20 @@ CFLAGS:=$(DEFAULT_FLAGS)  $(INC_FLAGS)
 KERN_MACRO:=-D__is_kernel
 LIBC_MACRO:=-D__is_libc
 LIBK_MACRO:=-D__is_libk
+DEBUG_MACRO:=#TODO
 
 CC_CF:=$(CC) $(CFLAGS) -std=gnu11
 
 # Objs
 ARCH_OBJS := $(addprefix $(ARCHDIR)/,$(KERNEL_ARCH_OBJS))
-KOBJS=$(ARCH_OBJS) kernel/kernel/kernel.o
+KOBJS=$(ARCH_OBJS) kernel/main.o
 
-.PHONY: all clean lib
+# TODO: use checkmake/remake to lint makefile
+.PHONY: all clean lib ctags
 .SUFFIXES: 
 
 # Rules
-all: $(OS)
+all: ctags $(OS)
 
 $(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
 	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(KOBJS) $(LIB_FLAGS)
@@ -90,6 +92,9 @@ qemu: $(OS)
 
 todolist:
 	rg -n -i TODO .
+
+ctags:
+	ctags -R --exclude=.git --exclude=.vscode .
 
 re:
 	make clean

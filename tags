@@ -47,13 +47,11 @@
 !_TAG_KIND_DESCRIPTION!Make	I,makefile	/makefiles/
 !_TAG_KIND_DESCRIPTION!Make	m,macro	/macros/
 !_TAG_KIND_DESCRIPTION!Make	t,target	/targets/
-!_TAG_KIND_DESCRIPTION!Markdown	S,subsection	/level 2 sections/
-!_TAG_KIND_DESCRIPTION!Markdown	T,l4subsection	/level 4 sections/
-!_TAG_KIND_DESCRIPTION!Markdown	c,chapter	/chapters/
-!_TAG_KIND_DESCRIPTION!Markdown	n,footnote	/footnotes/
-!_TAG_KIND_DESCRIPTION!Markdown	s,section	/sections/
-!_TAG_KIND_DESCRIPTION!Markdown	t,subsubsection	/level 3 sections/
-!_TAG_KIND_DESCRIPTION!Markdown	u,l5subsection	/level 5 sections/
+!_TAG_KIND_DESCRIPTION!Perl	c,constant	/constants/
+!_TAG_KIND_DESCRIPTION!Perl	f,format	/formats/
+!_TAG_KIND_DESCRIPTION!Perl	l,label	/labels/
+!_TAG_KIND_DESCRIPTION!Perl	p,package	/packages/
+!_TAG_KIND_DESCRIPTION!Perl	s,subroutine	/subroutines/
 !_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
 !_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
 !_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
@@ -63,7 +61,7 @@
 !_TAG_PARSER_VERSION!C++	0.0	/current.age/
 !_TAG_PARSER_VERSION!LdScript	0.0	/current.age/
 !_TAG_PARSER_VERSION!Make	0.0	/current.age/
-!_TAG_PARSER_VERSION!Markdown	0.0	/current.age/
+!_TAG_PARSER_VERSION!Perl	0.0	/current.age/
 !_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
 !_TAG_PROC_CWD	/home/atin/osdev/myos/	//
 !_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
@@ -82,49 +80,17 @@
 !_TAG_ROLE_DESCRIPTION!LdScript!symbol	entrypoint	/entry points/
 !_TAG_ROLE_DESCRIPTION!Make!makefile	included	/included/
 !_TAG_ROLE_DESCRIPTION!Make!makefile	optional	/optionally included/
-$(ARCHDIR)/crtbegin.o	Makefile	/^$(ARCHDIR)\/crtbegin.o $(ARCHDIR)\/crtend.o:$/;"	t
-$(ARCHDIR)/crtend.o	Makefile	/^$(ARCHDIR)\/crtbegin.o $(ARCHDIR)\/crtend.o:$/;"	t
-$(OS)	Makefile	/^$(OS): lib $(KOBJS) $(ARCHDIR)\/linker.ld$/;"	t
-%.libc.S	Makefile	/^%.libc.S: %.c$/;"	t
-%.libc.o	Makefile	/^%.libc.o: %.c$/;"	t
-%.libk.o	Makefile	/^%.libk.o: %.S$/;"	t
-%.libk.o	Makefile	/^%.libk.o: %.c$/;"	t
-%.o	Makefile	/^%.o: %.c$/;"	t
-%.o	Makefile	/^%.o: %.s$/;"	t
-ALIGN	arch/i386/boot.s	/^.set ALIGN,    1<<0             # align loaded modules on page boundaries$/;"	d
-AR	Makefile	/^AR:=$(HOST)-ar$/;"	m
-ARCHDIR	Makefile	/^ARCHDIR:=arch\/$(HOSTARCH)$/;"	m
 ARCH_I386_VGA_H	arch/i386/vga.h	/^#define ARCH_I386_VGA_H$/;"	d
-ARCH_OBJS	Makefile	/^ARCH_OBJS := $(addprefix $(ARCHDIR)\/,$(KERNEL_ARCH_OBJS))$/;"	m
-AS	Makefile	/^AS:=$(HOST)-as$/;"	m
-CC	Makefile	/^CC:=$(HOST)-gcc$/;"	m
-CC_CF	Makefile	/^CC_CF:=$(CC) $(CFLAGS) -std=gnu11$/;"	m
-CFLAGS	Makefile	/^CFLAGS:=$(DEFAULT_FLAGS)  $(INC_FLAGS)$/;"	m
-CHECKSUM	arch/i386/boot.s	/^.set CHECKSUM, -(MAGIC + FLAGS) # checksum of above, to prove we are multiboot$/;"	d
-DEBUG_MACRO	Makefile	/^DEBUG_MACRO:=#TODO$/;"	m
-DEFAULT_FLAGS	Makefile	/^DEFAULT_FLAGS:=-g -ffreestanding -O2$/;"	m
+CHECKSUM	arch/i386/boot.asm	/^CHECKSUM equ  -(MAGIC + MBFLAGS)$/;"	d
 EOF	include/stdio.h	/^#define EOF /;"	d
-EXTRA_FLAGS	Makefile	/^EXTRA_FLAGS:=-fstack-protector-all$/;"	m
-FLAGS	arch/i386/boot.s	/^.set FLAGS,    ALIGN | MEMINFO  # this is the Multiboot 'flag' field$/;"	d
-HOST	Makefile	/^HOST:=i686-elf$/;"	m
-HOSTARCH	Makefile	/^HOSTARCH:=i386$/;"	m
-INC_FLAGS	Makefile	/^INC_FLAGS:=-Iinclude$/;"	m
 KERNEL_ARCH_OBJS	arch/i386/build.mk	/^KERNEL_ARCH_OBJS=\\$/;"	m
-KERN_MACRO	Makefile	/^KERN_MACRO:=-D__is_kernel$/;"	m
-KOBJS	Makefile	/^KOBJS=$(ARCH_OBJS) kernel\/main.o$/;"	m
-LIBC_MACRO	Makefile	/^LIBC_MACRO:=-D__is_libc$/;"	m
-LIBC_OBJS	Makefile	/^LIBC_OBJS=$(LIB_SRC:.c=.libc.o)$/;"	m
-LIBK_MACRO	Makefile	/^LIBK_MACRO:=-D__is_libk$/;"	m
-LIBK_OBJS	Makefile	/^LIBK_OBJS=$(LIB_SRC:.c=.libk.o)$/;"	m
-LIB_BIN	Makefile	/^LIB_BIN:=lib\/libk.a # libc.a$/;"	m
-LIB_FLAGS	Makefile	/^LIB_FLAGS:=-Llib -nostdlib -lk -lgcc$/;"	m
-LIB_SRC	Makefile	/^LIB_SRC := $(wildcard lib\/**\/*.c)$/;"	m
-MAGIC	arch/i386/boot.s	/^.set MAGIC,    0x1BADB002       # 'magic number' lets bootloader find the header$/;"	d
-MEMINFO	arch/i386/boot.s	/^.set MEMINFO,  1<<1             # provide memory map$/;"	d
-OS	Makefile	/^OS:=myos.bin$/;"	m
-RELEASE_FLAGS	Makefile	/^RELEASE_FLAGS:=-O2 # TODO: release$/;"	m
-Timeline	readme.md	/^## Timeline$/;"	s
-Todos	readme.md	/^## Todos$/;"	s
+MAGIC	arch/i386/boot.asm	/^MAGIC    equ  0x1BADB002$/;"	d
+MBALIGN	arch/i386/boot.asm	/^MBALIGN  equ  1 << 0$/;"	d
+MBFLAGS	arch/i386/boot.asm	/^MBFLAGS  equ  MBALIGN | MEMINFO$/;"	d
+MEMINFO	arch/i386/boot.asm	/^MEMINFO  equ  1 << 1$/;"	d
+SETGATE	arch/i386/gdt.c	/^#define SETGATE(/;"	d	file:
+STS_IG32	arch/i386/gdt.c	/^#define STS_IG32 /;"	d	file:
+STS_TG32	arch/i386/gdt.c	/^#define STS_TG32 /;"	d	file:
 VGA_COLOR_BLACK	arch/i386/vga.h	/^	VGA_COLOR_BLACK = 0,$/;"	e	enum:vga_color
 VGA_COLOR_BLUE	arch/i386/vga.h	/^	VGA_COLOR_BLUE = 1,$/;"	e	enum:vga_color
 VGA_COLOR_BROWN	arch/i386/vga.h	/^	VGA_COLOR_BROWN = 6,$/;"	e	enum:vga_color
@@ -144,36 +110,75 @@ VGA_COLOR_WHITE	arch/i386/vga.h	/^	VGA_COLOR_WHITE = 15,$/;"	e	enum:vga_color
 VGA_HEIGHT	arch/i386/tty.c	/^static const size_t VGA_HEIGHT = 25;$/;"	v	typeref:typename:const size_t	file:
 VGA_MEMORY	arch/i386/tty.c	/^static uint16_t* const VGA_MEMORY = (uint16_t*) 0xB8000;$/;"	v	typeref:typename:uint16_t * const	file:
 VGA_WIDTH	arch/i386/tty.c	/^static const size_t VGA_WIDTH = 80;$/;"	v	typeref:typename:const size_t	file:
-WARN_FLAGS	Makefile	/^WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \\$/;"	m
+_ARCH_INT_H	include/arch/int.h	/^#define _ARCH_INT_H$/;"	d
 _KERNEL_TTY_H	include/kernel/tty.h	/^#define _KERNEL_TTY_H$/;"	d
 _STDIO_H	include/stdio.h	/^#define _STDIO_H /;"	d
 _STDLIB_H	include/stdlib.h	/^#define _STDLIB_H /;"	d
 _STRING_H	include/string.h	/^#define _STRING_H /;"	d
 _SYS_CDEFS_H	include/sys/cdefs.h	/^#define _SYS_CDEFS_H /;"	d
 __myos_libc	include/sys/cdefs.h	/^#define __myos_libc /;"	d
-_fini	arch/i386/crti.s	/^_fini:$/;"	l
-_init	arch/i386/crti.s	/^_init:$/;"	l
-_start	arch/i386/boot.s	/^_start:$/;"	l
+_start	arch/i386/boot.asm	/^_start:$/;"	l
 abort	lib/stdlib/abort.c	/^void abort(void) {$/;"	f	typeref:typename:void
-all	Makefile	/^all: ctags $(OS)$/;"	t
-clean	Makefile	/^clean:$/;"	t
-ctags	Makefile	/^ctags:$/;"	t
+args	arch/i386/gdt.c	/^  unsigned int args : 5;        \/\/ # args, 0 for interrupt\/trap gates$/;"	m	struct:gatedesc	typeref:typename:unsigned int:5	file:
+cs	arch/i386/gdt.c	/^  unsigned int cs : 16;         \/\/ code segment selector$/;"	m	struct:gatedesc	typeref:typename:unsigned int:16	file:
+cs	arch/i386/gdt.c	/^  unsigned short cs;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+dpl	arch/i386/gdt.c	/^  unsigned int dpl : 2;         \/\/ descriptor(meaning new) privilege level$/;"	m	struct:gatedesc	typeref:typename:unsigned int:2	file:
+ds	arch/i386/gdt.c	/^  unsigned short ds;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+eax	arch/i386/gdt.c	/^  unsigned int eax;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+ebp	arch/i386/gdt.c	/^  unsigned int ebp;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+ebx	arch/i386/gdt.c	/^  unsigned int ebx;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+ecx	arch/i386/gdt.c	/^  unsigned int ecx;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+edi	arch/i386/gdt.c	/^  unsigned int edi;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+edx	arch/i386/gdt.c	/^  unsigned int edx;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+eflags	arch/i386/gdt.c	/^  unsigned int eflags;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+eip	arch/i386/gdt.c	/^  unsigned int eip;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+err	arch/i386/gdt.c	/^  unsigned int err;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+es	arch/i386/gdt.c	/^  unsigned short es;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+esi	arch/i386/gdt.c	/^  unsigned int esi;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+esp	arch/i386/gdt.c	/^  unsigned int esp;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+fs	arch/i386/gdt.c	/^  unsigned short fs;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+gatedesc	arch/i386/gdt.c	/^struct gatedesc {$/;"	s	file:
+gdt	arch/i386/boot.asm	/^gdt:$/;"	l
+gdt_code	arch/i386/boot.asm	/^    gdt_code:$/;"	l
+gdt_data	arch/i386/boot.asm	/^    gdt_data:$/;"	l
+gdt_desc	arch/i386/boot.asm	/^gdt_desc:$/;"	l
+gdt_end	arch/i386/boot.asm	/^    gdt_end:$/;"	l
+gdt_null	arch/i386/boot.asm	/^    gdt_null:$/;"	l
+gs	arch/i386/gdt.c	/^  unsigned short gs;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+hang	arch/i386/boot.asm	/^.hang:  hlt$/;"	l
+idt	arch/i386/gdt.c	/^struct gatedesc idt[256];$/;"	v	typeref:struct:gatedesc[256]
+idtinit	arch/i386/gdt.c	/^idtinit(void)$/;"	f	typeref:typename:void
+interrupt_dispatch	arch/i386/gdt.c	/^interrupt_dispatch(struct trapframe *tf)$/;"	f	typeref:typename:void
+interrupt_stub	arch/i386/idt.asm	/^interrupt_stub:$/;"	l
 kernel_main	kernel/main.c	/^void kernel_main(void) {$/;"	f	typeref:typename:void
-lib	Makefile	/^lib: $(LIB_BIN)$/;"	t
-lib/libk.a	Makefile	/^lib\/libk.a: $(LIBK_OBJS)$/;"	t
-libc.a	Makefile	/^libc.a: $(LIBC_OBJS)$/;"	t
+lidt	arch/i386/gdt.c	/^lidt(struct gatedesc *p, int size)$/;"	f	typeref:typename:void	file:
+load_gdt	arch/i386/boot.asm	/^load_gdt:$/;"	l
 memcmp	lib/string/memcmp.c	/^int memcmp(const void* aptr, const void* bptr, size_t size) {$/;"	f	typeref:typename:int
 memcpy	lib/string/memcpy.c	/^void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size) {$/;"	f	typeref:typename:void *
 memmove	lib/string/memmove.c	/^void* memmove(void* dstptr, const void* srcptr, size_t size) {$/;"	f	typeref:typename:void *
 memset	lib/string/memset.c	/^void* memset(void* bufptr, int value, size_t size) {$/;"	f	typeref:typename:void *
+oesp	arch/i386/gdt.c	/^  unsigned int oesp;      \/\/ useless & ignored$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+off_15_0	arch/i386/gdt.c	/^  unsigned int off_15_0 : 16;   \/\/ low 16 bits of offset in segment$/;"	m	struct:gatedesc	typeref:typename:unsigned int:16	file:
+off_31_16	arch/i386/gdt.c	/^  unsigned int off_31_16 : 16;  \/\/ high bits of offset in segment$/;"	m	struct:gatedesc	typeref:typename:unsigned int:16	file:
+p	arch/i386/gdt.c	/^  unsigned int p : 1;           \/\/ Present$/;"	m	struct:gatedesc	typeref:typename:unsigned int:1	file:
+padding1	arch/i386/gdt.c	/^  unsigned short padding1;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+padding2	arch/i386/gdt.c	/^  unsigned short padding2;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+padding3	arch/i386/gdt.c	/^  unsigned short padding3;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+padding4	arch/i386/gdt.c	/^  unsigned short padding4;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+padding5	arch/i386/gdt.c	/^  unsigned short padding5;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+padding6	arch/i386/gdt.c	/^  unsigned short padding6;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+pop	arch/i386/idt.asm	/^    pop ds$/;"	d
 print	lib/stdio/printf.c	/^static bool print(const char* data, size_t length) {$/;"	f	typeref:typename:bool	file:
 printf	lib/stdio/printf.c	/^int printf(const char* restrict format, ...) {$/;"	f	typeref:typename:int
+push	arch/i386/idt.asm	/^    push ds$/;"	d
 putchar	lib/stdio/putchar.c	/^int putchar(int ic) {$/;"	f	typeref:typename:int
 puts	lib/stdio/puts.c	/^int puts(const char* string) {$/;"	f	typeref:typename:int
-qemu	Makefile	/^qemu: $(OS)$/;"	t
-re	Makefile	/^re:$/;"	t
-stack_bottom	arch/i386/boot.s	/^stack_bottom:$/;"	l
-stack_top	arch/i386/boot.s	/^stack_top:$/;"	l
+resb	arch/i386/boot.asm	/^resb 16384 ; 16 KiB$/;"	l
+rsv1	arch/i386/gdt.c	/^  unsigned int rsv1 : 3;        \/\/ reserved(should be zero I guess)$/;"	m	struct:gatedesc	typeref:typename:unsigned int:3	file:
+s	arch/i386/gdt.c	/^  unsigned int s : 1;           \/\/ must be 0 (system)$/;"	m	struct:gatedesc	typeref:typename:unsigned int:1	file:
+ss	arch/i386/gdt.c	/^  unsigned short ss;$/;"	m	struct:trapframe	typeref:typename:unsigned short	file:
+stack_bottom	arch/i386/boot.asm	/^stack_bottom:$/;"	l
+stack_top	arch/i386/boot.asm	/^stack_top:$/;"	l
 strlen	lib/string/strlen.c	/^size_t strlen(const char* str) {$/;"	f	typeref:typename:size_t
 terminal_buffer	arch/i386/tty.c	/^static uint16_t* terminal_buffer;$/;"	v	typeref:typename:uint16_t *	file:
 terminal_color	arch/i386/tty.c	/^static uint8_t terminal_color;$/;"	v	typeref:typename:uint8_t	file:
@@ -185,7 +190,9 @@ terminal_row	arch/i386/tty.c	/^static size_t terminal_row;$/;"	v	typeref:typenam
 terminal_setcolor	arch/i386/tty.c	/^void terminal_setcolor(uint8_t color) {$/;"	f	typeref:typename:void
 terminal_write	arch/i386/tty.c	/^void terminal_write(const char* data, size_t size) {$/;"	f	typeref:typename:void
 terminal_writestring	arch/i386/tty.c	/^void terminal_writestring(const char* data) {$/;"	f	typeref:typename:void
-todolist	Makefile	/^todolist:$/;"	t
+trapframe	arch/i386/gdt.c	/^struct trapframe {$/;"	s	file:
+trapno	arch/i386/gdt.c	/^  unsigned int trapno;$/;"	m	struct:trapframe	typeref:typename:unsigned int	file:
+type	arch/i386/gdt.c	/^  unsigned int type : 4;        \/\/ type(STS_{IG32,TG32})$/;"	m	struct:gatedesc	typeref:typename:unsigned int:4	file:
 vga_color	arch/i386/vga.h	/^enum vga_color {$/;"	g
 vga_entry	arch/i386/vga.h	/^static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {$/;"	f	typeref:typename:uint16_t
 vga_entry_color	arch/i386/vga.h	/^static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {$/;"	f	typeref:typename:uint8_t

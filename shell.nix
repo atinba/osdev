@@ -17,6 +17,7 @@ mkShell {
     qemu
     ripgrep
     universal-ctags
+    nasm
   ];
 }
 

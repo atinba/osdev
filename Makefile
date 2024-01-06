@@ -7,8 +7,8 @@ ARCHDIR:=arch/$(HOSTARCH)
 include $(ARCHDIR)/build.mk
 
 # Build Info
+AS:=nasm
 AR:=$(HOST)-ar
-AS:=$(HOST)-as
 CC:=$(HOST)-gcc
 
 RELEASE_FLAGS:=-O2 # TODO: release
@@ -20,7 +20,7 @@ WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
 EXTRA_FLAGS:=-fstack-protector-all
 INC_FLAGS:=-Iinclude
 LIB_FLAGS:=-Llib -nostdlib -lk -lgcc
-CFLAGS:=$(DEFAULT_FLAGS)  $(INC_FLAGS)
+CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS)
 
 KERN_MACRO:=-D__is_kernel
 LIBC_MACRO:=-D__is_libc
@@ -34,7 +34,7 @@ ARCH_OBJS := $(addprefix $(ARCHDIR)/,$(KERNEL_ARCH_OBJS))
 KOBJS=$(ARCH_OBJS) kernel/main.o
 
 # TODO: use checkmake/remake to lint makefile
-.PHONY: all clean lib ctags
+.PHONY: all clean lib ctags test
 .SUFFIXES: 
 
 # Rules
@@ -45,14 +45,11 @@ $(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
 	grub-file --is-x86-multiboot $@
 	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
 
-$(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
-	OBJ=`$(CC_CF) -print-file-name=$(@F)` && cp "$$OBJ" $@
-
 %.o: %.c
 	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
 
-%.o: %.s
-	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
+%.o: %.asm
+	$(AS) -felf32 $< -o $@
 
 # LIB
 LIB_SRC := $(wildcard lib/**/*.c)
@@ -68,7 +65,7 @@ lib/libk.a: $(LIBK_OBJS)
 %.libk.o: %.c
 	$(CC_CF) -MD -c $< -o $@ $(LIBK_MACRO)
 
-%.libk.o: %.S
+%.libk.o: %.asm
 	$(CC_CF) -MD -c $< -o $@ $(LIBK_MACRO)
 
 libc.a: $(LIBC_OBJS)
@@ -77,14 +74,18 @@ libc.a: $(LIBC_OBJS)
 %.libc.o: %.c
 	$(CC_CF) -MD -c $< -o $@ $(LIBC_MACRO)
 
-%.libc.S: %.c
+%.libc.asm: %.c
 	$(CC_CF) -MD -c $< -o $@ $(LIBC_MACRO)
+
+$(ARCHDIR)/vectors.asm: $(ARCHDIR)/vectors.pl
+	./$< > $@
 
 clean:
 	$(RM) $(OS) $(LIB_BIN)
 	$(RM) $(KOBJS) $(KOBJS:.o=.d)
 	$(RM) $(LIBK_OBJS) $(LIBK_OBJS:.o=.d)
 	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
+	$(RM) $(ARCHDIR)/vectors.asm
 	git clean -iX
 
 qemu: $(OS)
@@ -94,7 +95,7 @@ todolist:
 	rg -n -i TODO .
 
 ctags:
-	ctags -R --exclude=.git --exclude=.vscode .
+	ctags -R --exclude=.git --exclude=.vscode --exclude=readme.md --exclude=Makefile .
 
 re:
 	make clean

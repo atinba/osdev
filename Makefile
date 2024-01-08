@@ -12,7 +12,7 @@ AR:=$(HOST)-ar
 CC:=$(HOST)-gcc
 
 RELEASE_FLAGS:=-O2 # TODO: release
-DEFAULT_FLAGS:=-g -ffreestanding -O2
+DEFAULT_FLAGS:=-g -ffreestanding -O0
 WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
             -Wredundant-decls -Wnested-externs -Winline -Wno-long-long \
@@ -20,7 +20,7 @@ WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
 EXTRA_FLAGS:=-fstack-protector-all
 INC_FLAGS:=-Iinclude
 LIB_FLAGS:=-Llib -nostdlib -lk -lgcc
-CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS)
+CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS) $(WARN_FLAGS)
 
 KERN_MACRO:=-D__is_kernel
 LIBC_MACRO:=-D__is_libc

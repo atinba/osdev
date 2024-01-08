@@ -11,6 +11,8 @@
 
 - Jan 2024
     - get interrupts working
+    - testing stuff
+    - better build (lint, format, ...)
     - figure out what's next
 
 <details>

@@ -12,12 +12,20 @@ mkShell {
     cross_i686.buildPackages.gcc
     gdb
     gnumake
+    valgrind
     grub2
     xorriso
     qemu
     ripgrep
     universal-ctags
     nasm
+    indent
+    uncrustify
+    clang
+    cppcheck
+    splint
+    cloc
+    treefmt
   ];
 }
 

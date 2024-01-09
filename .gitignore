@@ -1,8 +1,10 @@
+# Ignore everything
 *
 
+# Except
 !*/
-
 !.gitignore
+!.clang-format
 !readme.md
 !shell.nix
 !Makefile
@@ -12,3 +14,6 @@
 !*.pl
 !*.mk
 !*.ld
+
+# Ignore this file
+vectors.asm

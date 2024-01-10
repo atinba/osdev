@@ -46,6 +46,7 @@ static void printint(int num, int base, int sign)
         putchar(buf[i]);
 }
 
+// TODO: 64 bit ints
 int printf(const char *restrict format, ...)
 {
     va_list parameters;

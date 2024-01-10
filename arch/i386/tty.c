@@ -53,7 +53,7 @@ void terminal_putchar(char c)
     }
 
     unsigned char uc = c;
-        
+
     terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) {
         terminal_column = 0;

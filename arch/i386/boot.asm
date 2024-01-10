@@ -1,9 +1,9 @@
 ; Declare constants for the multiboot header.
-MBALIGN  equ  1 << 0
-MEMINFO  equ  1 << 1
-MBFLAGS  equ  MBALIGN | MEMINFO
-MAGIC    equ  0x1BADB002
-CHECKSUM equ  -(MAGIC + MBFLAGS)
+MBALIGN  equ 1 << 0
+MEMINFO  equ 1 << 1
+MBFLAGS  equ MBALIGN | MEMINFO
+MAGIC    equ 0x1BADB002
+CHECKSUM equ -(MAGIC + MBFLAGS)
 
 ; Declare a header as in the Multiboot Standard.
 section .multiboot
@@ -59,10 +59,11 @@ _start:
     extern kernel_main
     call kernel_main
 
-    ; Hang if kernel_main unexpectedly returns.
+; Hang if kernel_main unexpectedly returns.
     cli
-.hang:  hlt
-    jmp .hang 
+.hang:
+    hlt
+    jmp .hang
 
 load_gdt:
     lgdt [gdt_desc]

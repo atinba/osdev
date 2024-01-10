@@ -7,14 +7,12 @@ interrupt_stub:
     push es
     push fs
     push gs
-    pushad ; pushal has been replaced with pushad in NASM
-
+    pushad
     mov edi, esp
     call interrupt_dispatch
     mov esp, eax
 
-    popad ; popal has been replaced with popad in NASM
-    pop gs
+    popad
     pop fs
     pop es
     pop ds

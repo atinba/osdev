@@ -5,7 +5,6 @@ HOST:=i686-elf
 HOSTARCH:=i386
 ARCHDIR:=arch/$(HOSTARCH)
 INCDIR:=include
-include $(ARCHDIR)/build.mk
 
 # Build Info
 AS:=nasm
@@ -21,14 +20,14 @@ EXTRA_FLAGS:=-fstack-protector-all
 INC_FLAGS:=-I$(INCDIR)
 LIB_FLAGS:=-Llib -nostdlib -lk -lgcc
 CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS) $(WARN_FLAGS)
-
 DEBUG_MACRO:=#TODO
 
 CC_CF:=$(CC) $(CFLAGS) -std=gnu11
 
 # Objs
-SRCFILES:=$(shell find . -name '*.c' -o -name '*.h' -name '*.asm')
-ARCH_OBJS := $(addprefix $(ARCHDIR)/,$(KERNEL_ARCH_OBJS))
+SRCFILES:=$(shell find . -name '*.c' -o -name '*.h')
+ARCH_SRC:=$(shell find $(ARCHDIR) -name '*.c' -o -name '*.pl' -o -name '*.asm')
+ARCH_OBJS:=$(patsubst %.c,%.o,$(patsubst %.asm,%.o,$(patsubst %.pl,%.o,$(ARCH_SRC))))
 KOBJS=$(ARCH_OBJS) kernel/main.o
 
 # TODO: use checkmake/remake to lint makefile
@@ -36,12 +35,12 @@ KOBJS=$(ARCH_OBJS) kernel/main.o
 .SUFFIXES: 
 
 # Rules
-all: $(OS)
+all: qemu
 
 $(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
 	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(KOBJS) $(LIB_FLAGS)
 	grub-file --is-x86-multiboot $@
-	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
+	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d $(ARCHDIR)/vectors.asm lib/libk.a
 
 %.o: %.c
 	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
@@ -87,8 +86,8 @@ format:
 
 lint:
 	cppcheck --enable=all --inconclusive --std=c11 -I$(INCDIR) .
-	find . -iname *.h -o -iname *.c | xargs clang-tidy -checks=cert-* -warnings-as-errors=* -- -I$(INCDIR)
-	find . -name '*.c' -o -name '*.h' | xargs splint -I$(INCDIR)
+	echo $(SRCFILES) | xargs clang-tidy -checks=cert-* -warnings-as-errors=* -- -I$(INCDIR)
+	echo $(SRCFILES) | xargs splint -I$(INCDIR)
 
 valgrind: $(OS)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(OS)

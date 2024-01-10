@@ -17,15 +17,12 @@ mkShell {
     xorriso
     qemu
     ripgrep
-    universal-ctags
     nasm
-    indent
-    uncrustify
     clang
     cppcheck
     splint
     cloc
-    treefmt
+    nasmfmt
   ];
 }
 

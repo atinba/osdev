@@ -3,7 +3,7 @@
 #include <kernel/tty.h>
 #include <arch/int.h>
 
-void kernel_main(void)
+void kmain(void)
 {
     terminal_initialize();
     idtinit();

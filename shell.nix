@@ -23,6 +23,7 @@ mkShell {
     splint
     cloc
     nasmfmt
+    bear
   ];
 }
 

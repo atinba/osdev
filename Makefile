@@ -37,6 +37,8 @@ KOBJS=$(ARCH_OBJS) kernel/main.o
 # Rules
 all: qemu
 
+os: $(OS)
+
 $(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
 	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(KOBJS) $(LIB_FLAGS)
 	grub-file --is-x86-multiboot $@
@@ -73,10 +75,9 @@ clean:
 	$(RM) $(LIBK_OBJS) $(LIBK_OBJS:.o=.d)
 	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
 	$(RM) $(ARCHDIR)/vectors.asm tags
-	git clean -iX
 
 qemu: $(OS)
-	qemu-system-i386 -kernel $(OS)
+	qemu-system-i386 -kernel $<
 
 todolist:
 	rg -n -i TODO .
@@ -86,8 +87,8 @@ format:
 
 lint:
 	cppcheck --enable=all --inconclusive --std=c11 -I$(INCDIR) .
-	echo $(SRCFILES) | xargs clang-tidy -checks=cert-* -warnings-as-errors=* -- -I$(INCDIR)
-	echo $(SRCFILES) | xargs splint -I$(INCDIR)
+	clang-tidy -checks=cert-* -warnings-as-errors=* $(SRCFILES) -- -I$(INCDIR)
+	splint -I$(INCDIR) $(SRCFILES)
 
 valgrind: $(OS)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(OS)

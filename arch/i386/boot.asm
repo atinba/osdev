@@ -56,8 +56,8 @@ _start:
 
     call load_gdt
 
-    extern kernel_main
-    call kernel_main
+    extern kmain
+    call kmain
 
 ; Hang if kernel_main unexpectedly returns.
     cli

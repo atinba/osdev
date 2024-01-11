@@ -30,20 +30,14 @@ static uint64_t get_idt_entry(uint32_t offset, int is_trap)
            (uint64_t)code_segment << 16 | (uint64_t)low_offset;
 }
 
-static inline void lidt(uint64_t *p, int size)
-{
-    volatile unsigned short pd[3];
-
-    pd[0] = size - 1;
-    pd[1] = (unsigned int)p;
-    pd[2] = (unsigned int)p >> 16;
-
-    asm volatile("lidt (%0)" ::"r"(pd));
-}
-
 void idtinit(void)
 {
+    // Populate IDT
     for (int i = 0; i < 256; i++)
         idt[i] = get_idt_entry(vectors[i], 0);
-    lidt(idt, sizeof(idt));
+
+    // Load IDT
+    uint32_t idt_addr = (uint32_t)&idt;
+    uint64_t idtr = (sizeof(idt) - 1) | (uint64_t)idt_addr << 16;
+    asm volatile("lidt (%0)" ::"r"(&idtr));
 }

@@ -6,7 +6,7 @@
 void idtinit(void);
 
 uint64_t idt[256];
-extern unsigned int vectors[]; // in vectors.S: array of 256 entry pointers
+extern unsigned int isr_table[];
 
 /* IDT Entry Structure:
  * 16: low 16 bits of offset in segment
@@ -34,7 +34,7 @@ void idtinit(void)
 {
     // Populate IDT
     for (int i = 0; i < 256; i++)
-        idt[i] = get_idt_entry(vectors[i], 0);
+        idt[i] = get_idt_entry(isr_table[i], 0);
 
     // Load IDT
     uint32_t idt_addr = (uint32_t)&idt;

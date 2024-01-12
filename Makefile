@@ -18,17 +18,15 @@ WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wconversion -Wstrict-prototypes #-fsanitize=address -fno-omit-frame-pointer
 EXTRA_FLAGS:=-fstack-protector-all
 INC_FLAGS:=-I$(INCDIR)
-LIB_FLAGS:=-Llib -nostdlib -lk -lgcc
-CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS) $(WARN_FLAGS)
+LIB_FLAGS:=-nostdlib -lgcc
+CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS) $(WARN_FLAGS) $(LIB_FLAGS)
 DEBUG_MACRO:=#TODO
 
 CC_CF:=$(CC) $(CFLAGS) -std=gnu11
 
-# Objs
-SRCFILES:=$(shell find . -name '*.c' -o -name '*.h')
-ARCH_SRC:=$(shell find $(ARCHDIR) -name '*.c' -o -name '*.pl' -o -name '*.asm')
-ARCH_OBJS:=$(patsubst %.c,%.o,$(patsubst %.asm,%.o,$(patsubst %.pl,%.o,$(ARCH_SRC))))
-KOBJS=$(ARCH_OBJS) kernel/main.o
+# Files
+SRCFILES:=$(shell find . -name '*.c' -o -name '*.asm')
+OBJFILES:=$(patsubst %.c,%.o,$(patsubst %.asm,%.o,$(SRCFILES)))
 
 # TODO: use checkmake/remake to lint makefile
 .PHONY: all clean lib test
@@ -39,63 +37,39 @@ all: qemu
 
 os: $(OS)
 
-$(OS): lib $(KOBJS) $(ARCHDIR)/linker.ld
-	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(KOBJS) $(LIB_FLAGS)
+$(OS): $(OBJFILES) $(ARCHDIR)/linker.ld
+	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(OBJFILES)
 	grub-file --is-x86-multiboot $@
-	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d $(ARCHDIR)/vectors.asm lib/libk.a
+	$(RM) *.o */*.o */*/*.o *.d */*.d */*/*.d
 
 %.o: %.c
-	$(CC_CF) $(CPPFLAGS) -MD -c $< -o $@
+	$(CC_CF) -MD -c $< -o $@
 
 %.o: %.asm
 	$(AS) -felf32 $< -o $@
 
-# LIB
-LIB_SRC:=$(shell find lib -name '*.c')
-LIBK_OBJS:=$(LIB_SRC:.c=.libk.o)
-LIB_BIN:=lib/libk.a
-
-lib: $(LIB_BIN)
-
-lib/libk.a: $(LIBK_OBJS)
-	$(AR) rcs $@ $(LIBK_OBJS)
-
-%.libk.o: %.c
-	$(CC_CF) -MD -c $< -o $@
-
-%.libk.o: %.asm
-	$(CC_CF) -MD -c $< -o $@
-
-$(ARCHDIR)/vectors.asm: $(ARCHDIR)/vectors.pl
-	./$< > $@
-
 clean:
 	$(RM) $(OS) $(LIB_BIN)
-	$(RM) $(KOBJS) $(KOBJS:.o=.d)
-	$(RM) $(LIBK_OBJS) $(LIBK_OBJS:.o=.d)
-	$(RM) *.a *.o */*.o */*/*.o *.d */*.d */*/*.d
-	$(RM) $(ARCHDIR)/vectors.asm tags
+	find . -name \*.o -type f -delete
+	find . -name \*.d -type f -delete
 
 qemu: $(OS)
 	qemu-system-i386 -kernel $<
 
-todolist:
-	rg -n -i TODO .
-
-format:
-	echo $(SRCFILES) | xargs clang-format -i
-
-lint:
-	cppcheck --enable=all --inconclusive --std=c11 -I$(INCDIR) .
-	clang-tidy -checks=cert-* -warnings-as-errors=* $(SRCFILES) -- -I$(INCDIR)
-	splint -I$(INCDIR) $(SRCFILES)
-
 valgrind: $(OS)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(OS)
 
-re:
-	make clean
-	make
+todo:
+	rg -n -i TODO .
 
--include $(OBJS:.o=.d)
--include $(LIBK_OBJS:.o=.d)
+CFILES:=$(shell find . -name '*.c' -o -name "*.h")
+
+format:
+	clang-format -i $(CFILES)
+
+lint:
+	cppcheck --enable=all --inconclusive --std=c11 -I$(INCDIR) .
+	clang-tidy -checks=cert-* -warnings-as-errors=* $(CFILES) -- -I$(INCDIR)
+	splint -I$(INCDIR) $(CFILES)
+
+-include $(OBJFILES:.o=.d)

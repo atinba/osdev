@@ -1,22 +1,26 @@
 ## Todos
 - Build System
-    - Add valgrind check, cloc, lint, test, format, coverage
-    - Pipelines to auto build
-    - Configure formatter, static analysis, coverage and other awesome things
+    - Configure testing, valgrind, static analysis, coverage and other awesome things
 - Getting a shell
+    - [x] Interrupts
+    - [ ] Keyboard
+    - [ ] Paging
     - ???
 
 
 ## Timeline
 
 - Jan 2024
-    - get interrupts working
-    - testing stuff
-    - better build (lint, format, ...)
+    - get keyboard working
+    - setup testing
     - figure out what's next
 
 <details>
-<summary>Past</summary>
+<summary>Done</summary>
+
+- 12 Jan 2024
+    - interrupts are working
+    - better build system (lint, format, ...)
 
 - 19/11 to 22/11
     - make

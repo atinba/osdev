@@ -1,9 +1,7 @@
-OS:=myos.bin
+OS:=noos.bin
 
 # Arch Info
 HOST:=i686-elf
-HOSTARCH:=i386
-ARCHDIR:=arch/$(HOSTARCH)
 INCDIR:=include
 
 # Build Info
@@ -25,20 +23,21 @@ DEBUG_MACRO:=#TODO
 CC_CF:=$(CC) $(CFLAGS) -std=gnu11
 
 # Files
-SRCFILES:=$(shell find . -name '*.c' -o -name '*.asm')
-OBJFILES:=$(patsubst %.c,%.o,$(patsubst %.asm,%.o,$(SRCFILES)))
+SRC_FILES:=$(shell find . -name '*.c' -o -name '*.asm')
+OBJ_FILES:=$(patsubst %.c,%.o,$(patsubst %.asm,%.o,$(SRC_FILES)))
+LINKER_FILE:=kernel/boot/linker.ld
 
 # TODO: use checkmake/remake to lint makefile
 .PHONY: all clean lib test
-.SUFFIXES: 
+.SUFFIXES:
 
 # Rules
 all: qemu
 
 os: $(OS)
 
-$(OS): $(OBJFILES) $(ARCHDIR)/linker.ld
-	$(CC_CF) -T $(ARCHDIR)/linker.ld -o $@ $(OBJFILES)
+$(OS): $(OBJ_FILES) $(LINKER_FILE)
+	$(CC_CF) -T $(LINKER_FILE) -o $@ $(OBJ_FILES)
 	grub-file --is-x86-multiboot $@
 	$(RM) *.o */*.o */*/*.o *.d */*.d */*/*.d
 
@@ -55,6 +54,14 @@ clean:
 
 qemu: $(OS)
 	qemu-system-i386 -kernel $<
+	$(RM) $<
+
+debug: $(OS)
+	qemu-system-i386 -kernel $< -s -S &
+	gdb \
+    -ex "file $<" \
+    -ex 'target remote localhost:1234' \
+    -ex 'break kmain' \
 
 valgrind: $(OS)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(OS)

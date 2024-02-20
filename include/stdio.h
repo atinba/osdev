@@ -4,5 +4,6 @@
 #define EOF (-1)
 
 void printf(const char *__restrict, ...);
+void putc(const int c);
 
 #endif

@@ -5,7 +5,6 @@
 #include <string.h>
 #include <kernel/tty.h>
 
-static void putchar(int);
 static void printint(int, int);
 
 // TODO: 64 bit ints
@@ -19,7 +18,7 @@ void printf(const char *restrict fmt, ...)
 
     while (*fmt) {
         if (*fmt != '%') {
-            putchar(*fmt);
+            putc(*fmt);
             fmt++;
             continue;
         }
@@ -33,12 +32,12 @@ void printf(const char *restrict fmt, ...)
             break;
         case 'c':
             nc = va_arg(parameters, int);
-            putchar(nc);
+            putc(nc);
             break;
         case 's':
             str = va_arg(parameters, const char *);
             while (*str) {
-                putchar(*str);
+                putc(*str);
                 str++;
             }
             break;
@@ -52,10 +51,10 @@ void printf(const char *restrict fmt, ...)
     va_end(parameters);
 }
 
-static void putchar(int ic)
+void putc(int ic)
 {
     char c = (char)ic;
-    terminal_write(&c, sizeof(c));
+    tty_write(&c, sizeof(c));
 }
 
 static void printint(int num, int base)
@@ -76,5 +75,5 @@ static void printint(int num, int base)
         buf[i++] = '-';
 
     while (--i >= 0)
-        putchar(buf[i]);
+        putc(buf[i]);
 }

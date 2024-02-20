@@ -1,12 +1,16 @@
 #include <stdio.h>
 
 #include <kernel/tty.h>
-#include <arch/int.h>
+
+extern void gdt_init();
+extern void idt_init();
 
 void kmain(void)
 {
-    terminal_initialize();
-    idtinit();
+    tty_init();
+    gdt_init();
+    idt_init();
     printf("Hello, kernel World!\n");
+    // while(1);
     printf("div by 0: %d\n", 1 / 0);
 }

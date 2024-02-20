@@ -4,13 +4,15 @@
 - Getting a shell
     - [x] Interrupts
     - [ ] Keyboard
+        - Understand the code
+        - Reorganize the code
     - [ ] Paging
     - ???
 
 
 ## Timeline
 
-- Jan 2024
+- Feb 2024
     - get keyboard working
     - setup testing
     - figure out what's next

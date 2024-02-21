@@ -40,5 +40,5 @@ void interrupt_dispatch(struct trapframe *tf) __attribute((used));
 
 void interrupt_dispatch(struct trapframe *tf)
 {
-    printf("inside int dispatch %d %d\n", tf->trapno, 100);
+    printf("inside int dispatch, trap no: %d \n", tf->trapno);
 }

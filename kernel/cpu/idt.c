@@ -1,12 +1,11 @@
 #include <stdint.h>
-#include <wchar.h>
+#include "kernel/cpu.h"
 
 #define STS_IG32 0xE // 32-bit Interrupt Gate
 #define STS_TG32 0xF // 32-bit Trap Gate
 
-void idt_init(void);
-extern void kbdinit(void);
-extern void keyboard_handler();
+extern void kbd_init(void);
+extern void keyboard_handler(void);
 
 uint64_t idt[256];
 extern unsigned int isr_table[];
@@ -35,14 +34,14 @@ static uint64_t get_idt_entry(uint32_t offset, int is_trap)
 
 void idt_init(void)
 {
-    // Populate IDT
     for (int i = 0; i < 32; i++)
         idt[i] = get_idt_entry(isr_table[i], 0);
 
     unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
     idt[0x21] = get_idt_entry(kb_handler_offset, 0);
 
-    kbdinit();
+    kbd_init();
+
     // Load IDT
     uint32_t idt_addr = (uint32_t)&idt;
     uint64_t idtr = (sizeof(idt) - 1) | (uint64_t)idt_addr << 16;

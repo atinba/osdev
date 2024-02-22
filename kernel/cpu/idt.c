@@ -1,14 +1,16 @@
 #include <stdint.h>
 #include "kernel/cpu.h"
 
-#define STS_IG32 0xE // 32-bit Interrupt Gate
-#define STS_TG32 0xF // 32-bit Trap Gate
-
-extern void kbd_init(void);
-extern void keyboard_handler(void);
-
-uint64_t idt[256];
 extern unsigned int isr_table[];
+uint64_t idt[NUM_IDT_ENTRIES];
+uint64_t gdt[3] = { 0, GDT_CODE, GDT_DATA };
+
+static void gdt_init(void)
+{
+    uint32_t gdt_addr = (uint32_t)&gdt;
+    uint64_t gdtr = (sizeof(gdt) - 1) | (uint64_t)gdt_addr << 16;
+    asm volatile("lgdt (%0)" ::"r"(&gdtr));
+}
 
 /* IDT Entry Structure:
  * 16: low 16 bits of offset in segment
@@ -21,26 +23,23 @@ extern unsigned int isr_table[];
  *  1: Present
  * 16: high bits of offset in segment
  */
-static uint64_t get_idt_entry(uint32_t offset, int is_trap)
+void set_idt_entry(int idt_index, uint32_t offset, int is_trap)
 {
     uint16_t low_offset = (uint16_t)(offset & 0xffff);
     uint16_t high_offset = (uint16_t)(offset >> 16);
     uint8_t type = (is_trap ? STS_TG32 : STS_IG32) | 1 << 7;
     uint16_t code_segment = 0x8;
 
-    return (uint64_t)high_offset << 48 | (uint64_t)type << 40 |
-           (uint64_t)code_segment << 16 | (uint64_t)low_offset;
+    idt[idt_index] = (uint64_t)high_offset << 48 | (uint64_t)type << 40 |
+                     (uint64_t)code_segment << 16 | (uint64_t)low_offset;
 }
 
 void idt_init(void)
 {
-    for (int i = 0; i < 32; i++)
-        idt[i] = get_idt_entry(isr_table[i], 0);
+    gdt_init();
 
-    unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
-    idt[0x21] = get_idt_entry(kb_handler_offset, 0);
-
-    kbd_init();
+    for (int i = 0; i < 256; i++)
+        set_idt_entry(i, isr_table[i], 0);
 
     // Load IDT
     uint32_t idt_addr = (uint32_t)&idt;

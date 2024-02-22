@@ -24,10 +24,11 @@ section .data
 section .text
     global _start
     section .text
-    extern kmain
 _start:
     mov eax, stack_top
     mov esp, eax
+
+    extern kmain
     call kmain
 ; Hang if kernel_main unexpectedly returns.
     cli

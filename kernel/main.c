@@ -6,9 +6,8 @@
 void kmain(void)
 {
     tty_init();
-    gdt_init();
     idt_init();
-    //    kbd_init();
+    kbd_init();
     printf("Hello, kernel World!\n");
     while (1)
         ;

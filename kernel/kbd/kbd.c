@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "stdio.h"
 
+#include "kernel/cpu.h"
 #include "kernel/kbd.h"
 
 #define PIC1_COMMAND_PORT 0x20
@@ -170,9 +171,14 @@ unsigned char keyboard_map[128] = {
     ' ',
 };
 
+extern void keyboard_handler(void);
+
 // TODO: Figure out what's happening here
-void kbd_init()
+void kbd_init(void)
 {
+    unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
+    set_idt_entry(33, kb_handler_offset, 0);
+
     // Disable cursor
     ioport_out(0x3D4, 0x0A);
     ioport_out(0x3D5, 0x20);

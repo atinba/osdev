@@ -24,7 +24,7 @@ CC_CF:=$(CC) $(CFLAGS) -std=gnu11
 
 # Files
 SRC_FILES:=$(shell find . -name '*.c' -o -name '*.asm')
-OBJ_FILES:=$(patsubst %.c,%.o,$(patsubst %.asm,%.o,$(SRC_FILES)))
+OBJ_FILES = $(addsuffix .o, $(SRC_FILES))
 LINKER_FILE:=kernel/boot/linker.ld
 
 # TODO: use checkmake/remake to lint makefile
@@ -41,10 +41,10 @@ $(OS): $(OBJ_FILES) $(LINKER_FILE)
 	grub-file --is-x86-multiboot $@
 	$(RM) *.o */*.o */*/*.o *.d */*.d */*/*.d
 
-%.o: %.c
+%.c.o: %.c
 	$(CC_CF) -MD -c $< -o $@
 
-%.o: %.asm
+%.asm.o: %.asm
 	$(AS) -felf32 $< -o $@
 
 clean:

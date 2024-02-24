@@ -1,5 +1,7 @@
 #include <stdint.h>
-#include "kernel/cpu.h"
+#include <kernel/cpu.h>
+
+#include "idt.h"
 
 extern unsigned int isr_table[];
 uint64_t idt[NUM_IDT_ENTRIES];

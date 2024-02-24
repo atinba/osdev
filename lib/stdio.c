@@ -1,14 +1,15 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+
+#include <lib/stdio.h>
+#include <lib/string.h>
 #include <kernel/tty.h>
 
 static void printint(int, int);
 
 // TODO: 64 bit ints
-void printf(const char *restrict fmt, ...)
+void printk(const char *restrict fmt, ...)
 {
     va_list parameters;
     va_start(parameters, fmt);
@@ -42,7 +43,7 @@ void printf(const char *restrict fmt, ...)
             }
             break;
         default:
-            printf("Invalid format specifier: %c\n", *fmt);
+            printk("Invalid format specifier: %c\n", *fmt);
         }
 
         fmt++;

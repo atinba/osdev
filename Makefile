@@ -63,6 +63,9 @@ debug: $(OS)
     -ex 'target remote localhost:1234' \
     -ex 'break kmain' \
 
+bear:
+	bear -- make os
+
 valgrind: $(OS)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(OS)
 

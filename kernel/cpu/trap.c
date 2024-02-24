@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <stdint.h>
+
+#include <lib/stdio.h>
 
 struct trapframe {
     // registers as pushed by pusha
@@ -40,5 +41,5 @@ void interrupt_dispatch(struct trapframe *tf) __attribute((used));
 
 void interrupt_dispatch(struct trapframe *tf)
 {
-    printf("inside int dispatch, trap no: %d \n", tf->trapno);
+    printk("inside int dispatch, trap no: %d \n", tf->trapno);
 }

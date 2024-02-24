@@ -1,8 +1,8 @@
 #include <stdint.h>
-#include "stdio.h"
 
-#include "kernel/cpu.h"
-#include "kernel/kbd.h"
+#include <lib/stdio.h>
+#include <kernel/cpu.h>
+#include <kernel/kbd.h>
 
 #define PIC1_COMMAND_PORT 0x20
 #define PIC1_DATA_PORT    0x21

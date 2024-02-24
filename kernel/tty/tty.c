@@ -1,8 +1,7 @@
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include "kernel/tty.h"
+#include <kernel/tty.h>
 
 #define VGA_COLOR  0x0A
 #define VGA_WIDTH  80

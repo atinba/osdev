@@ -9,7 +9,7 @@ void kmain(void)
     idt_init();
     kbd_init();
     printk("Hello, kernel World!\n");
-    printk("div by 0: %d\n", 1 / 0);
+    //printk("div by 0: %d\n", 1 / 0);
     while (1)
         ;
 }

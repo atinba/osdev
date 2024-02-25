@@ -183,6 +183,7 @@ void kbd_init(void)
     ioport_out(0x3D4, 0x0A);
     ioport_out(0x3D5, 0x20);
 
+    // TODO
     // https://wiki.osdev.org/8259_PIC
     // ICW1: Init commands
     ioport_out(PIC1_COMMAND_PORT, 0x11);

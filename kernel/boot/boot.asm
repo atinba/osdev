@@ -25,13 +25,17 @@ section .text
     global _start
     section .text
 _start:
+    extern load_gdt
+    call load_gdt
+
+    cli
     mov eax, stack_top
     mov esp, eax
+
 
     extern kmain
     call kmain
 ; Hang if kernel_main unexpectedly returns.
-    cli
 .hang:
     hlt
     jmp .hang

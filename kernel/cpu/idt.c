@@ -5,14 +5,6 @@
 
 extern unsigned int isr_table[];
 uint64_t idt[NUM_IDT_ENTRIES];
-uint64_t gdt[3] = { 0, GDT_CODE, GDT_DATA };
-
-static void gdt_init(void)
-{
-    uint32_t gdt_addr = (uint32_t)&gdt;
-    uint64_t gdtr = (sizeof(gdt) - 1) | (uint64_t)gdt_addr << 16;
-    asm volatile("lgdt (%0)" ::"r"(&gdtr));
-}
 
 /* IDT Entry Structure:
  * 16: low 16 bits of offset in segment
@@ -38,8 +30,6 @@ void set_idt_entry(int idt_index, uint32_t offset, int is_trap)
 
 void idt_init(void)
 {
-    gdt_init();
-
     for (int i = 0; i < 256; i++)
         set_idt_entry(i, isr_table[i], 0);
 

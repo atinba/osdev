@@ -8,6 +8,7 @@ INCDIR:=include
 AS:=nasm
 AR:=$(HOST)-ar
 CC:=$(HOST)-gcc
+QEMU:=qemu-system-i386
 
 DEFAULT_FLAGS:=-g -ffreestanding -O0
 WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
@@ -48,16 +49,33 @@ $(OS): $(OBJ_FILES) $(LINKER_FILE)
 	$(AS) -felf32 $< -o $@
 
 clean:
-	$(RM) $(OS) $(LIB_BIN)
+	$(RM) $(OS) $(LIB_BIN) noos.iso
 	find . -name \*.o -type f -delete
 	find . -name \*.d -type f -delete
 
 qemu: $(OS)
-	qemu-system-i386 -kernel $<
+	$(QEMU) -kernel $<
 	$(RM) $<
 
 debug: $(OS)
-	qemu-system-i386 -kernel $< -s -S &
+	$(QEMU) -kernel $< -s -S &
+	gdb \
+    -ex "file $<" \
+    -ex 'target remote localhost:1234' \
+    -ex 'break kmain' \
+
+iso: $(OS)
+	mkdir -p isodir/boot/grub
+	cp $(OS) isodir/boot/
+	echo "menuentry \"noos\" { multiboot /boot/noos.bin}" > isodir/boot/grub/grub.cfg
+	grub-mkrescue -o noos.iso isodir
+	$(RM) -rf isodir
+
+qemu-iso: iso
+	$(QEMU) -cdrom noos.iso -d int --no-reboot
+
+debug-iso: iso
+	$(QEMU) -cdrom noos.iso -s -S &
 	gdb \
     -ex "file $<" \
     -ex 'target remote localhost:1234' \

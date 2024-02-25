@@ -1,6 +1,7 @@
 ## Todos
 - Build System
     - Configure testing, valgrind, static analysis, coverage and other awesome things
+    - Building iso
 - Getting a shell
     - [x] Interrupts
     - [ ] Keyboard

@@ -3,7 +3,7 @@
 
 #include "idt.h"
 
-extern unsigned int isr_table[];
+extern uint32_t isr_table[];
 uint64_t idt[NUM_IDT_ENTRIES];
 
 /* IDT Entry Structure:

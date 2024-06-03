@@ -9,6 +9,8 @@ AS:=nasm
 AR:=$(HOST)-ar
 CC:=$(HOST)-gcc
 QEMU:=qemu-system-i386
+QEMU_FLAGS:=-machine q35 -smp cores=4 -monitor stdio -d int -no-reboot
+QEMU_WF:=$(QEMU) $(QEMU_FLAGS)
 
 DEFAULT_FLAGS:=-g -ffreestanding -O0
 WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
@@ -16,7 +18,8 @@ WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wredundant-decls -Wnested-externs -Winline -Wno-long-long \
             -Wconversion -Wstrict-prototypes #-fsanitize=address -fno-omit-frame-pointer
 EXTRA_FLAGS:=-fstack-protector-all
-INC_FLAGS:=-I$(INCDIR)
+# TODO: Update
+INC_FLAGS:=-I$(INCDIR) -isystem /nix/store/sg08f9x09wpk7n2hgbv80hjc1y0n25dy-newlib-i686-elf-4.3.0.20230120/i686-elf/include -isystem /nix/store/yq46z8aaqvjb9865p77jjir513bfp2gi-i686-elf-gcc-13.2.0/lib/gcc/i686-elf/13.2.0/include
 LIB_FLAGS:=-nostdlib -lgcc
 CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS) $(WARN_FLAGS) $(LIB_FLAGS)
 DEBUG_MACRO:=#TODO
@@ -54,11 +57,11 @@ clean:
 	find . -name \*.d -type f -delete
 
 qemu: $(OS)
-	$(QEMU) -kernel $<
+	$(QEMU_WF) -kernel $<
 	$(RM) $<
 
 debug: $(OS)
-	$(QEMU) -kernel $< -s -S &
+	$(QEMU_WF) -kernel $< -s -S &
 	gdb \
     -ex "file $<" \
     -ex 'target remote localhost:1234' \
@@ -72,10 +75,10 @@ iso: $(OS)
 	$(RM) -rf isodir
 
 qemu-iso: iso
-	$(QEMU) -cdrom noos.iso -d int --no-reboot
+	$(QEMU_WF) -cdrom noos.iso -d int --no-reboot
 
 debug-iso: iso
-	$(QEMU) -cdrom noos.iso -s -S &
+	$(QEMU_WF) -cdrom noos.iso -s -S &
 	gdb \
     -ex "file $<" \
     -ex 'target remote localhost:1234' \

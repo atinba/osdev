@@ -10,6 +10,7 @@ with pkgs;
 mkShell {
   buildInputs = [
     cross_i686.buildPackages.gcc
+    #cross_i686.buildPackages.clang
     gdb
     gnumake
     valgrind

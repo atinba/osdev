@@ -18,24 +18,22 @@ align 16
 stack_bottom:
 resb 16384 ; 16 KiB
 stack_top:
-section .data
+
+section .text
+
+global _start
 
 ; The kernel entry point.
-section .text
-    global _start
-    section .text
 _start:
     extern load_gdt
     call load_gdt
 
-    cli
-    mov eax, stack_top
-    mov esp, eax
-
+    cli ; TODO: ???
+    mov esp, stack_top
 
     extern kmain
     call kmain
-; Hang if kernel_main unexpectedly returns.
+; Hang if kernel unexpectedly returns.
 .hang:
     hlt
     jmp .hang

@@ -1,4 +1,3 @@
-#include <limits.h>
 #include <stdbool.h>
 #include <stdarg.h>
 
@@ -55,7 +54,7 @@ void printk(const char *restrict fmt, ...)
 void putc(int ic)
 {
     char c = (char)ic;
-    tty_write(&c, sizeof(c));
+    tty_putc(c);
 }
 
 static void printint(int num, int base)

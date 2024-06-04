@@ -1,10 +1,10 @@
-#include <stdint.h>
+#include <kernel/types.h>
 #include <kernel/cpu.h>
 
 #include "idt.h"
 
-extern uint32_t isr_table[];
-uint64_t idt[NUM_IDT_ENTRIES];
+extern u32 isr_table[];
+u64 idt[NUM_IDT_ENTRIES];
 
 /* IDT Entry Structure:
  * 16: low 16 bits of offset in segment
@@ -17,15 +17,15 @@ uint64_t idt[NUM_IDT_ENTRIES];
  *  1: Present
  * 16: high bits of offset in segment
  */
-void set_idt_entry(int idt_index, uint32_t offset, int is_trap)
+void set_idt_entry(int idt_index, u32 offset, int is_trap)
 {
-    uint16_t low_offset = (uint16_t)(offset & 0xffff);
-    uint16_t high_offset = (uint16_t)(offset >> 16);
-    uint8_t type = (is_trap ? STS_TG32 : STS_IG32) | 1 << 7;
-    uint16_t code_segment = 0x8;
+    u16 low_offset = (u16)(offset & 0xffff);
+    u16 high_offset = (u16)(offset >> 16);
+    u8 type = (is_trap ? STS_TG32 : STS_IG32) | 1 << 7;
+    u16 code_segment = 0x8;
 
-    idt[idt_index] = (uint64_t)high_offset << 48 | (uint64_t)type << 40 |
-                     (uint64_t)code_segment << 16 | (uint64_t)low_offset;
+    idt[idt_index] = (u64)high_offset << 48 | (u64)type << 40 |
+                     (u64)code_segment << 16 | (u64)low_offset;
 }
 
 void idt_init(void)
@@ -34,7 +34,7 @@ void idt_init(void)
         set_idt_entry(i, isr_table[i], 0);
 
     // Load IDT
-    uint32_t idt_addr = (uint32_t)&idt;
-    uint64_t idtr = (sizeof(idt) - 1) | (uint64_t)idt_addr << 16;
+    u32 idt_addr = (u32)&idt;
+    u64 idtr = (sizeof(idt) - 1) | (u64)idt_addr << 16;
     asm volatile("lidt (%0)" ::"r"(&idtr));
 }

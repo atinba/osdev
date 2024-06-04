@@ -61,7 +61,7 @@ qemu: $(OS)
 	$(RM) $<
 
 debug: $(OS)
-	$(QEMU_WF) -kernel $< -s -S &
+	$(QEMU) -kernel $< -s -S &
 	gdb \
     -ex "file $<" \
     -ex 'target remote localhost:1234' \
@@ -78,7 +78,7 @@ qemu-iso: iso
 	$(QEMU_WF) -cdrom noos.iso -d int --no-reboot
 
 debug-iso: iso
-	$(QEMU_WF) -cdrom noos.iso -s -S &
+	$(QEMU) -cdrom noos.iso -s -S &
 	gdb \
     -ex "file $<" \
     -ex 'target remote localhost:1234' \

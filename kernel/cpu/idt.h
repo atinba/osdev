@@ -1,7 +1,7 @@
 #ifndef _CPU_IDT_H
 #define _CPU_IDT_H
 
-#include <stdint.h>
+#include <kernel/types.h>
 
 #define NUM_IDT_ENTRIES 256
 #define STS_IG32        0xE // 32-bit Interrupt Gate

@@ -1,8 +1,7 @@
-#include <stdint.h>
-
-#include <lib/stdio.h>
+#include <kernel/types.h>
 #include <kernel/cpu.h>
 #include <kernel/kbd.h>
+#include <lib/stdio.h>
 
 #define PIC1_COMMAND_PORT 0x20
 #define PIC1_DATA_PORT    0x21
@@ -16,160 +15,8 @@ extern void enable_interrupts(void);
 extern char ioport_in(unsigned short port);
 extern void ioport_out(unsigned short port, unsigned char data);
 
-extern void inl(uint16_t port);
-extern void outl(uint16_t port, uint32_t data);
-
-// Right control, right alt seem to send
-// keycode 224, then the left control/alt keycode
-// Arrow keys also send two interrupts, one 224 and then their actual code
-// Same for numpad enter
-// 197: Num Lock
-// 157: Pause|Break (followed by 197?)
-// Clicking on screen appears to send keycodes 70, 198
-// Is this the MARK command or something like that?
-unsigned char keyboard_map[128] = {
-    // -------- 0 to 9 --------
-    ' ',
-    ' ', // 1: escape key
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    // -------- 10 to 19 --------
-    '9',
-    '0',
-    '-',
-    '=',
-    ' ', // Backspace
-    ' ', // Tab
-    'q',
-    'w',
-    'e',
-    'r',
-    // -------- 20 to 29 --------
-    't',
-    'y',
-    'u',
-    'i',
-    'o',
-    'p',
-    '[',
-    ']',
-    ' ', // Enter
-    ' ', // left Ctrl
-    // -------- 30 to 39 --------
-    'a',
-    's',
-    'd',
-    'f',
-    'g',
-    'h',
-    'j',
-    'k',
-    'l',
-    ';',
-    // -------- 40 to 49 --------
-    ' ',
-    '`',
-    ' ', // left Shift
-    ' ',
-    'z',
-    'x',
-    'c',
-    'v',
-    'b',
-    'n',
-    // -------- 50 to 59 --------
-    'm',
-    ',',
-    '.',
-    '/', // slash, or numpad slash if preceded by keycode 224
-    ' ', // right Shift
-    '*', // numpad asterisk
-    ' ', // left Alt
-    ' ', // Spacebar
-    ' ',
-    ' ', // F1
-    // -------- 60 to 69 --------
-    ' ', // F2
-    ' ', // F3
-    ' ', // F4
-    ' ', // F5
-    ' ', // F6
-    ' ', // F7
-    ' ', // F8
-    ' ', // F9
-    ' ', // F10
-    ' ',
-    // -------- 70 to 79 --------
-    ' ', // scroll lock
-    '7', // numpad 7, HOME key if preceded by keycode 224
-    '8', // numpad 8, up arrow if preceded by keycode 224
-    '9', // numpad 9, PAGE UP key if preceded by keycode 224
-    '-', // numpad hyphen
-    '4', // numpad 4, left arrow if preceded by keycode 224
-    '5', // numpad 5
-    '6', // numpad 6, right arrow if preceded by keycode 224
-    ' ',
-    '1', // numpad 1, END key if preceded by keycode 224
-    // -------- 80 to 89 --------
-    '2', // numpad 2, down arrow if preceded by keycode 224
-    '3', // numpad 3, PAGE DOWN key if preceded by keycode 224
-    '0', // numpad 0, INSERT key if preceded by keycode 224
-    '.', // numpad dot, DELETE key if preceded by keycode 224
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    // -------- 90 to 99 --------
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    // -------- 100 to 109 --------
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    // -------- 110 to 119 --------
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    // -------- 120-127 --------
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-    ' ',
-};
+extern void inl(u16 port);
+extern void outl(u16 port, u32 data);
 
 extern void keyboard_handler(void);
 
@@ -210,6 +57,20 @@ void kbd_init(void)
     enable_interrupts();
 }
 
+static u8 normalmap[256] = {
+    0,    0x1B, '1', '2',  '3',  '4', '5',  '6', // 0x00
+    '7',  '8',  '9', '0',  '-',  '=', '\b', '\t',
+    'q',  'w',  'e', 'r',  't',  'y', 'u',  'i', // 0x10
+    'o',  'p',  '[', ']',  '\n', 0,   'a',  's',
+    'd',  'f',  'g', 'h',  'j',  'k', 'l',  ';', // 0x20
+    '\'', '`',  0,   '\\', 'z',  'x', 'c',  'v',
+    'b',  'n',  'm', ',',  '.',  '/', 0,    '*', // 0x30
+    0,    ' ',  0,   0,    0,    0,   0,    0,
+    0,    0,    0,   0,    0,    0,   0,    '7', // 0x40
+    '8',  '9',  '-', '4',  '5',  '6', '+',  '1',
+    '2',  '3',  '0', '.',  0,    0,   0,    0,   // 0x50
+};
+
 void handle_keyboard_interrupt()
 {
     // Write end of interrupt (EOI)
@@ -219,17 +80,11 @@ void handle_keyboard_interrupt()
     // Lowest bit of status will be set if buffer not empty
     // (thanks mkeykernel)
     if (status & 0x1) {
-        char keycode = ioport_in(KEYBOARD_DATA_PORT);
+        u8 keycode = ioport_in(KEYBOARD_DATA_PORT);
+
         if (keycode < 0 || keycode >= 128)
             return;
-        if (keycode == 28) {
-            putc('\n');
-        } else if (keycode == 14) {
-            //backspace();
-        } else if (keycode == 1) {
-            //vga_exit();
-        } else {
-            putc(keyboard_map[keycode]);
-        }
+
+        putc(normalmap[keycode]);
     }
 }

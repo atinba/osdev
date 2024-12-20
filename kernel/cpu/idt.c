@@ -1,23 +1,22 @@
-#include <kernel/types.h>
-#include <kernel/cpu.h>
-
 #include "idt.h"
 
 extern u32 isr_table[];
 u64 idt[NUM_IDT_ENTRIES];
 
+extern void keyboard_handler(void);
+
 /* IDT Entry Structure:
  * 16: low 16 bits of offset in segment
  * 16: code segment selector
  *  5: #args, 0 for interrupt/trap gates
- *  3: reserved(should be zero)
+ *  3::reserved(should be zero)
  *  4: type(STS_{IG32,TG32})
  *  1: must be 0 (system)
  *  2: descriptor(meaning new) privilege level (highest priv i.e. 0)
  *  1: Present
  * 16: high bits of offset in segment
  */
-void set_idt_entry(int idt_index, u32 offset, int is_trap)
+void set_idt_entry(int idt_index, u32 offset, bool is_trap)
 {
     u16 low_offset = (u16)(offset & 0xffff);
     u16 high_offset = (u16)(offset >> 16);
@@ -32,6 +31,9 @@ void idt_init(void)
 {
     for (int i = 0; i < 256; i++)
         set_idt_entry(i, isr_table[i], 0);
+
+    unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
+    set_idt_entry(33, kb_handler_offset, 0);
 
     // Load IDT
     u32 idt_addr = (u32)&idt;

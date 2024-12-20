@@ -1,15 +1,17 @@
 OS:=noos.bin
 
 # Arch Info
-HOST:=i686-elf
+HOST:=x86_64
 INCDIR:=include
 
 # Build Info
 AS:=nasm
-AR:=$(HOST)-ar
-CC:=$(HOST)-gcc
-QEMU:=qemu-system-i386
-QEMU_FLAGS:=-machine q35 -smp cores=4 -monitor stdio -d int -no-reboot
+AR:=$(HOST)-elf-ar
+CC:=$(HOST)-elf-gcc
+LD:=$(HOST)-elf-ld
+
+QEMU:=qemu-system-$(HOST)
+QEMU_FLAGS:=-machine q35 -smp cores=4 -monitor stdio -d int -M smm=off -no-reboot
 QEMU_WF:=$(QEMU) $(QEMU_FLAGS)
 
 DEFAULT_FLAGS:=-g -ffreestanding -O0
@@ -19,7 +21,7 @@ WARN_FLAGS:= -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wconversion -Wstrict-prototypes #-fsanitize=address -fno-omit-frame-pointer
 EXTRA_FLAGS:=-fstack-protector-all
 # TODO: Update
-INC_FLAGS:=-I$(INCDIR) -isystem /nix/store/sg08f9x09wpk7n2hgbv80hjc1y0n25dy-newlib-i686-elf-4.3.0.20230120/i686-elf/include -isystem /nix/store/yq46z8aaqvjb9865p77jjir513bfp2gi-i686-elf-gcc-13.2.0/lib/gcc/i686-elf/13.2.0/include
+INC_FLAGS:=-I$(INCDIR)
 LIB_FLAGS:=-nostdlib -lgcc
 CFLAGS:=$(DEFAULT_FLAGS) $(INC_FLAGS) $(WARN_FLAGS) $(LIB_FLAGS)
 DEBUG_MACRO:=#TODO
@@ -49,7 +51,7 @@ $(OS): $(OBJ_FILES) $(LINKER_FILE)
 	$(CC_CF) -MD -c $< -o $@
 
 %.asm.o: %.asm
-	$(AS) -felf32 $< -o $@
+	$(AS) -f elf64 $< -o $@
 
 clean:
 	$(RM) $(OS) $(LIB_BIN) noos.iso

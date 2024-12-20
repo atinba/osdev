@@ -12,10 +12,8 @@ enable_interrupts:
 	ret
 
 keyboard_handler:
-	pushad
 	cld
 	call handle_keyboard_interrupt
-	popad
 	iretd
 
 ioport_in:

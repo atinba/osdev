@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> { }
-, cross_i686 ? import <nixpkgs> {
+, cross_64 ? import <nixpkgs> {
     crossSystem = {
-      config = "i686-elf";
+      config = "x86_64-elf";
     };
   }
 }:
@@ -9,7 +9,7 @@
 with pkgs;
 mkShell {
   buildInputs = [
-    cross_i686.buildPackages.gcc
+    cross_64.buildPackages.gcc
     #cross_i686.buildPackages.clang
     gdb
     gnumake
@@ -25,6 +25,7 @@ mkShell {
     cloc
     nasmfmt
     bear
+    limine
   ];
 }
 

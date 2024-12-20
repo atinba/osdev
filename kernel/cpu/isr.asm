@@ -2,21 +2,11 @@ section .text
     extern interrupt_dispatch
 
 isr_stub:
-    push ds
-    push es
-    push fs
-    push gs
-    pushad
-    mov edi, esp
+    mov rdi, rsp
     call interrupt_dispatch
-    mov esp, eax
+    mov rsp, rax
 
-    popad
-    pop fs
-    pop es
-    pop ds
-
-    add esp, 8
+    add rsp, 16
 
     iret
 

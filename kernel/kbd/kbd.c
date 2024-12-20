@@ -18,13 +18,10 @@ extern void ioport_out(unsigned short port, unsigned char data);
 extern void inl(u16 port);
 extern void outl(u16 port, u32 data);
 
-extern void keyboard_handler(void);
 
 // TODO: Figure out what's happening here
 void kbd_init(void)
 {
-    unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
-    set_idt_entry(33, kb_handler_offset, 0);
 
     // Disable cursor
     ioport_out(0x3D4, 0x0A);
@@ -37,7 +34,7 @@ void kbd_init(void)
     ioport_out(PIC2_COMMAND_PORT, 0x11);
 
     // ICW2: Vector offset (start PIC1 at 0x20, PIC2 at 0x28)
-    ioport_out(PIC1_DATA_PORT, 0x20);
+    ioport_out(PIC1_DATA_PORT, 0x21);
     ioport_out(PIC2_DATA_PORT, 0x28);
 
     // ICW3: ???
@@ -49,8 +46,8 @@ void kbd_init(void)
     ioport_out(PIC2_DATA_PORT, 0x1);
 
     // Mask interrupts
-    ioport_out(PIC1_DATA_PORT, 0xff);
-    ioport_out(PIC2_DATA_PORT, 0xff);
+    //ioport_out(PIC1_DATA_PORT, 0xff);
+    //ioport_out(PIC2_DATA_PORT, 0xff);
 
     // Enable IRQ1 for kbd
     ioport_out(PIC1_DATA_PORT, 0xFD);
